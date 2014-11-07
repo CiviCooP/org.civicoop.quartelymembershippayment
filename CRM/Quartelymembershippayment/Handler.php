@@ -100,12 +100,14 @@ class CRM_Quartelymembershippayment_Handler {
   protected function alterContribution(DateTime $receive_date) {
     $params = $this->first_contribution;
     $params['receive_date'] = $receive_date->format('YmdHis');
+		unset($params['payment_instrument']);
     $result = civicrm_api3('Contribution', 'create', $params);
   }
   
   protected function addNewContribution(DateTime $receive_date) {
     $params = $this->first_contribution;
     $params['receive_date'] = $receive_date->format('YmdHis');
+		unset($params['payment_instrument']);
     unset($params['contribution_id']);
     unset($params['id']);
     
