@@ -12,6 +12,8 @@ class CRM_Quartelymembershippayment_Handler {
   
   protected $membership;
   
+  protected static $_doNotCheckContributionIds = array();
+  
   public function __construct($id, $params) {
     $this->id = $id;
     if (is_object($params)) {
@@ -36,6 +38,10 @@ class CRM_Quartelymembershippayment_Handler {
     }
     if (empty($this->params['contribution_id'])) {
       $this->isValid = false;
+      return;
+    }
+    
+    if (in_array($this->params['contribution_id'], self::$_doNotCheckContributionIds)) {
       return;
     }
     
@@ -116,15 +122,16 @@ class CRM_Quartelymembershippayment_Handler {
 		unset($params['payment_instrument']);
     unset($params['contribution_id']);
     unset($params['id']);
-    
+        
     $result = civicrm_api3('Contribution', 'create', $params);
-    //record membership payment for this contribution
-    //we don't use the bao for this otherwise we create loop to ourselves ;-)
-    $sql = "INSERT INTO `civicrm_membership_payment` (`membership_id`, `contribution_id`) VALUES (%1, %2)";
-    CRM_Core_DAO::executeQuery($sql, array(
-      1 => array($this->membership['id'], 'Integer'),
-      2 => array($result['id'], 'Integer')
-    ));
+    
+    //prevent looping with this new contribution record
+    self::$_doNotCheckContributionIds[] = $result['id'];
+    
+    //$mpBao = new CRM_Member_BAO_MembershipPayment();
+    $mpBao['membership_id'] = $this->membership['id'];
+    $mpBao['contribution_id'] = $result['id'];
+    CRM_Member_BAO_MembershipPayment::create($mpBao);   
   }
   
   protected function getRelatedContribution() {
