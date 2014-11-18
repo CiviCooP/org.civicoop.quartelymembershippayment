@@ -83,7 +83,13 @@ class CRM_Quartelymembershippayment_Handler {
       $endQDate->modify("+3 months");
       $endQDate->modify("-1 day");
 
-      if ($firstContributionDate->format("Ymd") > $startQDate->format("Ymd") && $firstContributionDate->format("Ymd") <= $endQDate->format("Ymd")) {
+      if ($q == 1 && $firstContributionDate->format('Ymd') < $startQDate->format('Ymd')) {
+        //when first contribution is in current year, but next quarter is in next year
+        //set first contribution a year later so that we can move it back to the first day of
+        //the first quarter        
+        $this->alterContribution($startQDate);
+        $firstContributionDate = clone $startQDate;
+      } elseif ($firstContributionDate->format("Ymd") >= $startQDate->format("Ymd") && $firstContributionDate->format("Ymd") <= $endQDate->format("Ymd")) {
         $nextStartQDate = clone $startQDate;
         $nextStartQDate->modify("+3 months");
         
