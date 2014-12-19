@@ -111,17 +111,28 @@ class CRM_Quartelymembershippayment_Handler {
   
   protected function alterContribution(DateTime $receive_date) {
     $params = $this->first_contribution;
+    $instrument_id = $this->getPaymenyInstrument($params);
     $params['receive_date'] = $receive_date->format('YmdHis');
 		unset($params['payment_instrument']);
+    unset($params['instrument_id']);
+    if ($instrument_id) {
+      $params['contribution_payment_instrument_id'] = $instrument_id;
+    }
     $result = civicrm_api3('Contribution', 'create', $params);
   }
   
   protected function addNewContribution(DateTime $receive_date) {
     $params = $this->first_contribution;
+    $instrument_id = $this->getPaymenyInstrument($params);
     $params['receive_date'] = $receive_date->format('YmdHis');
 		unset($params['payment_instrument']);
     unset($params['contribution_id']);
-    unset($params['id']);
+    unset($params['id']);    
+    unset($params['instrument_id']);
+    if ($instrument_id) {
+      $params['contribution_payment_instrument_id'] = $instrument_id;
+    }
+    
         
     $result = civicrm_api3('Contribution', 'create', $params);
     
@@ -144,5 +155,16 @@ class CRM_Quartelymembershippayment_Handler {
     return $membership;
   }
   
+  protected function getPaymenyInstrument($contribution) {
+    if (empty($contribution['instrument_id'])) {
+      return false;
+    }
+    
+    $instrument_id = CRM_Core_OptionGroup::getValue('payment_instrument', $contribution['instrument_id'], 'id', 'Integer');
+    if (empty($instrument_id)) {
+      return false;
+    }
+    return $instrument_id;
+  }
 }
 
