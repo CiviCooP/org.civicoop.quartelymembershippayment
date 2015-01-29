@@ -101,6 +101,11 @@ class CRM_Quartelymembershippayment_Handler {
         
         $this->alterContribution($nextStartQDate);
         $firstContributionDate = clone $nextStartQDate;
+
+        //skip one quarter
+        $startQDate->modify("+3 months");
+        $q++;
+
       } elseif ($firstContributionDate->format("Ymd") < $startQDate->format("Ymd")) {
         $this->addNewContribution($startQDate);
       }
