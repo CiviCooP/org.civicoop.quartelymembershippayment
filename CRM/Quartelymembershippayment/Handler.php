@@ -128,6 +128,7 @@ class CRM_Quartelymembershippayment_Handler {
   
   protected function addNewContribution(DateTime $receive_date) {
     $params = $this->first_contribution;
+
     $instrument_id = $this->getPaymenyInstrument($params);
     $params['receive_date'] = $receive_date->format('YmdHis');
 		unset($params['payment_instrument']);
@@ -152,6 +153,14 @@ class CRM_Quartelymembershippayment_Handler {
   
   protected function getRelatedContribution() {
     $contribution = civicrm_api3('Contribution', 'getsingle', array('id' => $this->params['contribution_id']));
+
+    $sql = "SELECT honor_contact_id, honor_type_id FROM civicrm_contribution WHERE id = %1";
+    $dao = CRM_Core_DAO::executeQuery($sql, array( 1 => array($contribution['id'], 'Integer')));
+    if ($dao->fetch() && $dao->honor_contact_id) {
+      $contribution['honor_contact_id'] = $dao->honor_contact_id;
+      $contribution['honor_type_id'] = $dao->honor_type_id;
+    }
+
     return $contribution;
   }
   
