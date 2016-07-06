@@ -141,6 +141,15 @@ class CRM_Quartelymembershippayment_Handler {
     
         
     $result = civicrm_api3('Contribution', 'create', $params);
+    // Get Soft contributions
+    $softContributions = civicrm_api3('ContributionSoft', 'get', array('contribution_id' => $this->first_contribution['id']));
+    foreach($softContributions['values'] as $softContribution) {
+      $newSoftContribution = $softContribution;
+      unset($newSoftContribution['id']);
+      $newSoftContribution['contribution_id'] = $result['id'];
+      civicrm_api3('ContributionSoft', 'create', $newSoftContribution);
+    }
+
     
     //prevent looping with this new contribution record
     self::$_doNotCheckContributionIds[] = $result['id'];
@@ -153,14 +162,6 @@ class CRM_Quartelymembershippayment_Handler {
   
   protected function getRelatedContribution() {
     $contribution = civicrm_api3('Contribution', 'getsingle', array('id' => $this->params['contribution_id']));
-
-    $sql = "SELECT honor_contact_id, honor_type_id FROM civicrm_contribution WHERE id = %1";
-    $dao = CRM_Core_DAO::executeQuery($sql, array( 1 => array($contribution['id'], 'Integer')));
-    if ($dao->fetch() && $dao->honor_contact_id) {
-      $contribution['honor_contact_id'] = $dao->honor_contact_id;
-      $contribution['honor_type_id'] = $dao->honor_type_id;
-    }
-
     return $contribution;
   }
   
