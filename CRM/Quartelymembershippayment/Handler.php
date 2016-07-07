@@ -121,7 +121,7 @@ class CRM_Quartelymembershippayment_Handler {
 		unset($params['payment_instrument']);
     unset($params['instrument_id']);
     if ($instrument_id) {
-      $params['contribution_payment_instrument_id'] = $instrument_id;
+      $params['payment_instrument_id'] = $instrument_id;
     }
     $result = civicrm_api3('Contribution', 'create', $params);
   }
@@ -136,7 +136,7 @@ class CRM_Quartelymembershippayment_Handler {
     unset($params['id']);    
     unset($params['instrument_id']);
     if ($instrument_id) {
-      $params['contribution_payment_instrument_id'] = $instrument_id;
+      $params['payment_instrument_id'] = $instrument_id;
     }
     
         
