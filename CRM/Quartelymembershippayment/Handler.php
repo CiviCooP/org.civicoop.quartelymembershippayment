@@ -123,6 +123,9 @@ class CRM_Quartelymembershippayment_Handler {
     if ($instrument_id) {
       $params['payment_instrument_id'] = $instrument_id;
     }
+    unset($params['soft_credit']);
+    unset($params['soft_credit_to']);
+    unset($params['soft_credit_id']);
     $result = civicrm_api3('Contribution', 'create', $params);
   }
   
@@ -138,7 +141,9 @@ class CRM_Quartelymembershippayment_Handler {
     if ($instrument_id) {
       $params['payment_instrument_id'] = $instrument_id;
     }
-    
+    unset($params['soft_credit']);
+    unset($params['soft_credit_to']);
+    unset($params['soft_credit_id']);
         
     $result = civicrm_api3('Contribution', 'create', $params);
     // Get Soft contributions
