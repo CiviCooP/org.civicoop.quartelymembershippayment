@@ -1,0 +1,12 @@
+{
+  "name": "civicoop/org.civicoop.quartelymembershippayment",
+  "description": "Functionality for quarterly payments for yearly memberships",
+  "type": "civicrm-module",
+  "authors": [
+    {
+      "name": "Jaap Jansma",
+      "email": "helpdesk@civicoop.org"
+    }
+  ],
+  "license": "AGPL-3.0"
+}
